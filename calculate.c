@@ -1,188 +1,223 @@
 #include <stdio.h>
-int ch; /*Εξωτερική μεταβλητή ch για χαρακτήρες*/
-int error1, error2, error3; /*Εξωτερικές μεταβλητές error*/
 
-int ispaces(){ /*Συνάρτηση για αγνόηση των κενών χαρακτήρων*/
-	while(ch==' ' || ch=='\t'){ /*Επανέλαβε όσο ο χαρακτήρας είναι το κενό*/
-		ch=getchar(); /*Επόμενος χαρακτήρας*/
-	}
-	return ch;
+int ch;
+int error1, error2, error3; //Counters of errors
+//error1: Unexpected character
+//error2: Missing closing parenthesis
+//error3: Unexpected end of input
+
+void ispaces(){ //Function that ignores the spaces and tabs at input
+	while(ch==' ' || ch=='\t')
+		ch= getchar();
 }
 
-int unumber(){ /*Συνάρτηση: αριθμός χωρίς πρόσημο*/
+int unumber(){ //Function that builts up an unsigned number
 	int  i=0;
-	/*Ένας αριθμός χωρίς πρόσημο είναι είτε ένα ψηφίο είτε μια ακολουθία από ένα ή περισσότερα ψηφία*/
-	while (ch>='0' && ch<='9'){ /*Επανέλαβε όσο ο χαρακτήρας είναι ψηφίο*/
+
+	while (ch>='0' && ch<='9'){
     	i= (ch-'0')+i*10;
-        ch=getchar(); /*Επόμενος χαρακτήρας*/
+      ch= getchar();
 	}
-	ispaces(); /*Κάλεσε την συνάρητη ispaces για αγνόηση των κενών*/
-	if (ch!='+' && ch!='-' && ch!='*' && ch!='\n' && ch!=')'){ /*Αν ο χαρακτήρας δεν είναι ο προσδοκώμενος*/
-		error1++; /*Σφάλμα: αύξησε τον μετρητή error*/
-		ch=getchar(); /*Επόμενος χαρακτήρας*/
+	ispaces(); //Ignore the spaces
+	while(ch!='+' && ch!='-' && ch!='*' && ch!='\n' && ch!=')'){ //If following character not expected
+		error1++; //Increase the correct error counter
+		ch= getchar();
 	}
-	return i;
+	printf("unumber= %d \n", i);
+	return i; //Return the unsigned number
 }
 
-int snumber(){ /*Συνάρτηση: αριθμός με πρόσημο ή χωρίς*/
+int snumber(){ //Function that builts up a signed number
 	int i=0;
-	/*Ένας αριθμός είναι είτε χωρίς πρόσημο είτε με πρόσημο + ή -*/
-	if (ch=='+'){ /*Αν έχει πρόσημο +*/
-		ch=getchar(); /*Επόμενος χαρακτήρας*/
-		/*Αν ο χαρακτήρας δεν είναι ο προσδοκώμενος, δηλαδή αν δεν είναι ψηφίο*/
+
+	if (ch=='+'){
+		ch= getchar();
+		//If following character not expected
 		if (ch=='\n' ){
-			error3++; /*Αύξησε μετρητή error*/
+			error3++;
 		}
-		if (!(ch>='0' && ch<='9')){
-			error1++; /*Αύξησε μετρητή error*/
+		else if (!(ch>='0' && ch<='9')){
+			error1++;
 		}
-		i=unumber(); /*Κάλεσε την συνάρητη unumber για αριθμό*/
+		else i= unumber();
 	}
-	else if (ch=='-'){ /*Αν έχει πρόσημο -*/
-		ch=getchar(); /*Επόμενος χαρακτήρας*/
-		/*Αν ο χαρακτήρας δεν είναι ο προσδοκώμενος, δηλαδή αν δεν είναι ψηφίο*/
-		if (ch=='\n'){
-			error3++; /*Αύξησε μετρήτη error*/
+	else if (ch=='-'){
+		ch=getchar();
+		//If following character not expected
+		if (ch=='\n'){//If following character not expected
+			error3++;
 		}
-		if (!(ch>='0' && ch<='9')){
-			error1++; /*Αύξησε μετρητή error*/
+		else if (!(ch>='0' && ch<='9')){
+			error1++;
 		}
-		i=(-1)*unumber(); /*Κάλεσε την συνάρτηση unumber για αριθμό και πολλαπλασίασε με -1 γιατί είναι αρνητικός αριθμός*/
+		else i=(-1)*unumber();
 	}
-	else if (ch>='0' && ch<='9') /*Αν δεν έχει πρόσημο*/
-		i=unumber(); /*Κάλεσε την συνάρητηση unumber για αριθμό*/
+	else if (ch>='0' && ch<='9') //Not a signed number
+		i= unumber();
+	printf("iunumber= %d\n", i);
 	return i;
 }
 
-int factor(); /*Πρωτότυπο της συνάρτησης: παράγοντας*/
+int factor();
 
-int term(){ /*Συνάρητη: όρος*/
+int term(){
 	int i=0, j=0;
-	/*Ένας όρος είναι είτε ένας παράγοντας είτε ένα γινόμενο παραγόντων*/
-	i=factor(); /*Κάλεσε την συνάρτηση factor για τον παράγοντα*/
-	while (ch=='*'){ /*Επανέλαβε όσο ο έχουμε πολλαπλασιασμό παραγόντων*/
-		ch=getchar(); /*Επόμενος χαρακτήρας*/
-		ispaces(); /*Κάλεσε την συνάρτηση ispaces για αγνόηση κενών χαρακτήρων*/
-		/*Αν ο χαρακτήρας δεν είναι ο προσδοκώμενος*/
+
+	i=factor();
+	printf("ifactor= %d\n", i);
+	while (ch=='*'){
+		ch=getchar();
+		ispaces();
+
 		if (ch=='\n')
-			error3++; /*Αύξησε μετρητή error*/
+			error3++;
 		if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
-			error1++; /*Αύξησε μετρητή error*/
-			ch=getchar(); /*Επόμενος χαρακτήρας*/
+			error1++;
+			ch=getchar();
 		}
-		j=factor(); /*Κάλεσε την συνάρτηση factor για τον επόμενο παράγοντα*/
-		i=i*j; /*Πολλαπλασιασμός των παραγόντων*/
+		j= factor();
+		printf("ifactor= %d\n", i);
+		i= i*j;
 	}
+	printf("totalifactor=%d \n", i);
 	return i;
 }
 
-int expression(){ /*Συνάρτηση: αριθμητική παράσταση*/
-	int i=0, j=0; 
-	/*Μία αριθμητική παράσταση είναι είτε ένας όρος είτε μια ακολουθία με προσθαφαιρέσεις δύο ή περισσότερων όρων*/
-	ispaces(); /*Κάλεσε την συνάρτηση ispaces για αγνόηση κενών χαρακτήρων*/
-	if ( !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='('){ /*Αν ο χαρακτήρας δεν είναι ο προσδοκώμενος*/
-		error1++; /*Αύξησε μετρητή error*/
-		ch=getchar(); /*Επόμενος χαρακτήρας*/
-	}
-	i=term(); /*Κάλεσε την συνάρτηση: όρος*/
-	while(ch=='+'){ /*Επανέλαβε όσο έχουμε πρόσθεση*/
-		ch=getchar(); /*Επόμενος χαρακτήρας*/
-		ispaces(); /*Κάλεσε την συνάρητη ispaces για αγνόηση των κενών*/
-		/*Αν ο χαρακτήρας δεν είναι ο προσδοκώμενος*/
-		if (ch=='\n')
-			error3++; /*Αύξησε μετρητή error*/
-		if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
-			error1++; /*Αύξησε μετρητή error*/
-			ch=getchar(); /*Επόμενος χαρακτήρας*/
-		}
-		j=term(); /*Κάλεσε την συνάρτηση term για τον επόμενο όρο*/
-		i= j+i; /*Πρόρθεση των δύο όρων*/
-		while(ch=='-'){ /*Επανέλαβε όσο έχουμε αφαίρεση*/
-			ch=getchar(); /*Επόμενος χαρακτήρας*/
-			ispaces(); /*Κάλεσε την συνάρητη ispaces για αγνόηση των κενών*/
-			/*Αν ο χαρακτήρας δεν είναι ο προσδοκώμενος*/
-			if (ch=='\n')
-				error3++; /*Αύξησε μετρητή error*/
-			if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
-				error1++; /*Αύξησε μετρητή error*/
-				ch=getchar(); /*Επόμενος χαρακτήρας*/
-			}
-			j=term(); /*Κάλεσε την συνάρτηση term για τον επόμενο όρο*/
-			i=i-j; /*Αφάιρεση των δύο όρων*/
-		}
-	}
-	while(ch=='-'){ /*Επανέλαβε όσο έχουμε αφαίρεση*/
-		ch=getchar(); /*Επόμενος χαρακτήρας*/
-		ispaces(); /*Κάλεσε την συνάρητη ispaces για αγνόηση των κενών*/
-		/*Αν ο χαρακτήρας δεν είναι ο προσδοκώμενος*/
-		if (ch=='\n')
-			error3++; /*Αύξησε μετρητή error*/
-		if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
-			error1++; /*Αύξησε μετρητή error*/
-			ch=getchar(); /*Επόμενος χαρακτήρας*/
-		}
-		j=term(); /*Κάλεσε την συνάρτηση term για τον επόμενο όρο*/
-		i=i-j; /*Αφαίρεση των δύο όρων*/
-		while(ch=='+'){ /*Επανέλαβε όσο έχουμε πρόσθεση*/
-			ch=getchar(); /*Επόμενος χαρακτήρας*/
-			ispaces(); /*Κάλεσε την συνάρητη ispaces για αγνόηση των κενών*/
-			/*Αν ο χαρακτήρας δεν είναι ο προσδοκώμενος*/
-			if (ch=='\n')
-				error3++; /*Αύξησε μετρητή error*/
-			if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
-				error1++; /*Αύξησε μετρητή error*/
-				ch=getchar(); /*Επόμενος χαρακτήρας*/
-			}
-			j=term(); /*Κάλεσε την συνάρτηση term για τον επόμενο όρο*/
-			i= j+i; /*Πρόσθεση των δύο όρων*/
-		}
+int expression(int *exp){
+	//int i=0;
+	//ch= getchar();
+	ispaces();
+	if ( !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='('){
+		error1++;
+		ch=getchar();
 	}
 
-	return i;
+	//*expression= i;
+	//printf("iterm= %d\n", i);
+	if(ch== '+'){
+		ch= getchar();
+		//i+= term();
+		*exp+= term();
+		//printf("+=expression= %d\n", i);
+	}
+
+	else if(ch== '-'){
+		ch= getchar();
+		//i+= (-1)*expression();
+	//	*expression-= term;
+		//i-= term();
+		*exp-= term();
+	//	printf("-=expression= %d\n", i);
+	}
+	else{
+		*exp= term();
+	}
+	while(ch!= '\n')
+		*exp= expression(exp);
+/*
+	while(ch=='+'){
+		ch=getchar();
+		ispaces();
+
+		if (ch=='\n')
+			error3++;
+		if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
+			error1++;
+			ch=getchar();
+		}
+		j=term();
+		i= j+i;
+		while(ch=='-'){
+			ch=getchar();
+			ispaces();
+
+			if (ch=='\n')
+				error3++;
+			if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
+				error1++;
+				ch=getchar();
+			}
+			j=term();
+			i=i-j;
+		}
+	}
+	while(ch=='-'){
+		ch=getchar();
+		ispaces();
+
+		if (ch=='\n')
+			error3++;
+		if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
+			error1++;
+			ch=getchar();
+		}
+		j=term();
+		i=i-j;
+		while(ch=='+'){
+			ch=getchar();
+			ispaces();
+
+			if (ch=='\n')
+				error3++;
+			if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
+				error1++;
+				ch=getchar();
+			}
+			j=term();
+			i= j+i;
+		}
+	}
+*/
+	return *exp;
 }
 
-int factor(){ /*Συνάρτηση: παράγοντας*/
+int factor(){
 	int i=0;
-	/*Ένας παράγοντας είναι είτε ένας αριθμός είτε μια αριθμητική παράσταση μέσα σε παρενθέσεις*/
-	i=snumber(); /*Κάλεσε την συνάρητη snumber για τον αριθμό*/
-	if (ch=='('){ /*Αν έχουμε ανοιχτή παρένθεση*/
-		ch=getchar(); /*Επόμενος χαρακτήρας*/
-		i=expression(); /*Κάλεσε την συνάρτηση expression για την αριθμητική παράσταση*/
-		if (ch==')'){ /*Αν κλείσει η παρένθεση*/
-			ch=getchar(); /*Επόμενος χαρακτήρας*/
-			ispaces(); /*Κάλεσε τη συνάρητη ispaces για αγνόηση των κενών χαρακτήρων*/
+
+	//i= snumber();
+	if (ch=='('){
+		ch=getchar();
+		int n= 0;
+		i=expression(&n);
+		printf("iexpression= %d\n", i);
+		if (ch==')'){
+			ch=getchar();
+			ispaces();
 			return i;
 		}
-		if (ch=='\n'){ /*Αν ο χαρακτήρας δεν είναι ο προσδοκώμενος*/
-			error2++; /*Σφάλμα: αύξησε τον μετρητή error*/
+		else if (ch=='\n'){
+			error2++;
 		}
 	}
+	else i= snumber();
+	printf("isnumber= %d\n", i);
 	return i;
 }
 
 int main(void){
 	int  total=0, flag=0;
-	while ((ch=getchar())!= EOF){ /*Επανέλαβε μέχρι ο χαρακτήρας να είναι EOF*/
-		while (ch!='\n'){ /*Επανέλαβε μέχρι ο χαρακτήρας να είναι η αλλαγή γραμμής*/
-			total=expression(); /*Το σύνολο είναι το αποτέλεσμα της αριθμητικής παράστασης*/
+	while ((ch=getchar())!= EOF){
+		int n= 0;
+		while (ch!='\n'){
+			total= expression(&n);
 		}
-		if (error1!=0){ /*Αν ο μετρήτης του error1 έχει αυξηθεί*/
-			flag++; /*Αύξησε τον μετρητή των αριθμητικών παραστάσεων*/
+		if (error1!=0){
+			flag++;
 			printf("Result %d: Unexpected character\n", flag);
 		}
-		else if (error2!=0){ /*Αν ο μετρήτης του error2 έχει αυξηθεί*/
-			flag++; /*Αύξησε τον μετρητή των αριθμητικών παραστάσεων*/
+		else if (error2!=0){
+			flag++;
 			printf("Result %d: Missing closing parenthesis\n", flag);
 		}
-		else if (error3!=0){ /*Αν ο μετρήτης του error3 έχει αυξηθεί*/
-			flag++; /*Αύξησε τον μετρητή των αριθμητικών παραστάσεων*/
+		else if (error3!=0){
+			flag++;
 			printf("Result %d: Unexpected end of input\n", flag);
 		}
-		else if (error1==0 && error2==0 && error3==0){ /*Αν κανένας μετρητής error δεν έχει αυξηθεί*/
-			flag++; /*Αύξησε τον μετρητή των αριθμητικών παραστάσεων*/
+		else if (error1==0 && error2==0 && error3==0){
+			flag++;
 			printf("Result %d: %d\n",flag,total);
 		}
-		/*Επαναφορά των μεταβλητών error*/
+
 		error1=0;
 		error2=0;
 		error3=0;
