@@ -83,39 +83,16 @@ int term(){
 	return i;
 }
 
-int expression(int *exp){
-	//int i=0;
-	//ch= getchar();
+int expression(){
+	int i=0, j=0;
 	ispaces();
 	if ( !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='('){
 		error1++;
 		ch=getchar();
 	}
-
-	//*expression= i;
-	//printf("iterm= %d\n", i);
-	if(ch== '+'){
-		ch= getchar();
-		//i+= term();
-		*exp+= term();
-		//printf("+=expression= %d\n", i);
-	}
-
-	else if(ch== '-'){
-		ch= getchar();
-		//i+= (-1)*expression();
-	//	*expression-= term;
-		//i-= term();
-		*exp-= term();
-	//	printf("-=expression= %d\n", i);
-	}
-	else{
-		*exp= term();
-	}
-	while(ch!= '\n')
-		*exp= expression(exp);
-/*
-	while(ch=='+'){
+	i= term();
+	while(ch=='+' || ch=='-'){
+		char operation= ch;
 		ch=getchar();
 		ispaces();
 
@@ -126,59 +103,20 @@ int expression(int *exp){
 			ch=getchar();
 		}
 		j=term();
-		i= j+i;
-		while(ch=='-'){
-			ch=getchar();
-			ispaces();
+		if(operation=='+') i= i+j;
+		else i= i-j;
 
-			if (ch=='\n')
-				error3++;
-			if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
-				error1++;
-				ch=getchar();
-			}
-			j=term();
-			i=i-j;
-		}
 	}
-	while(ch=='-'){
-		ch=getchar();
-		ispaces();
-
-		if (ch=='\n')
-			error3++;
-		if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
-			error1++;
-			ch=getchar();
-		}
-		j=term();
-		i=i-j;
-		while(ch=='+'){
-			ch=getchar();
-			ispaces();
-
-			if (ch=='\n')
-				error3++;
-			if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
-				error1++;
-				ch=getchar();
-			}
-			j=term();
-			i= j+i;
-		}
-	}
-*/
-	return *exp;
+	return i;
 }
 
 int factor(){
 	int i=0;
 
-	//i= snumber();
+	i= snumber();
 	if (ch=='('){
 		ch=getchar();
-		int n= 0;
-		i=expression(&n);
+		i=expression();
 		printf("iexpression= %d\n", i);
 		if (ch==')'){
 			ch=getchar();
@@ -189,7 +127,7 @@ int factor(){
 			error2++;
 		}
 	}
-	else i= snumber();
+	//else i= snumber();
 	printf("isnumber= %d\n", i);
 	return i;
 }
@@ -197,9 +135,8 @@ int factor(){
 int main(void){
 	int  total=0, flag=0;
 	while ((ch=getchar())!= EOF){
-		int n= 0;
 		while (ch!='\n'){
-			total= expression(&n);
+			total= expression();
 		}
 		if (error1!=0){
 			flag++;
