@@ -11,8 +11,8 @@ void ispaces(){ //Function that ignores the spaces and tabs at input
 		ch= getchar();
 }
 
-int unumber(){ //Function that builts up an unsigned number
-	int  i=0;
+int unumber(){ //<unumber>::= <digit> | <digit> <unumber>
+	int  i= 0;
 
 	while (ch>='0' && ch<='9'){
     	i= (ch-'0')+i*10;
@@ -23,14 +23,13 @@ int unumber(){ //Function that builts up an unsigned number
 		error1++; //Increase the correct error counter
 		ch= getchar();
 	}
-	printf("unumber= %d \n", i);
 	return i; //Return the unsigned number
 }
 
-int snumber(){ //Function that builts up a signed number
-	int i=0;
+int snumber(){ //<snumber>::= <unumber> | ’+’ <unumber> | ’-’ <unumber>
+	int i= 0;
 
-	if (ch=='+'){
+	if (ch=='+'){ //If the number is positive
 		ch= getchar();
 		//If following character not expected
 		if (ch=='\n' ){
@@ -41,7 +40,7 @@ int snumber(){ //Function that builts up a signed number
 		}
 		else i= unumber();
 	}
-	else if (ch=='-'){
+	else if (ch=='-'){ //If the number is negative
 		ch=getchar();
 		//If following character not expected
 		if (ch=='\n'){//If following character not expected
@@ -54,45 +53,45 @@ int snumber(){ //Function that builts up a signed number
 	}
 	else if (ch>='0' && ch<='9') //Not a signed number
 		i= unumber();
-	printf("iunumber= %d\n", i);
+
 	return i;
 }
 
 int factor();
 
-int term(){
-	int i=0, j=0;
+int term(){ //<term>::= <factor> | <factor> ’*’ <term>
+	int i= 0, j= 0;
 
-	i=factor();
-	printf("ifactor= %d\n", i);
+	i= factor();
+
 	while (ch=='*'){
 		ch=getchar();
 		ispaces();
 
 		if (ch=='\n')
 			error3++;
-		if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
+		else if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
 			error1++;
 			ch=getchar();
 		}
 		j= factor();
-		printf("ifactor= %d\n", i);
 		i= i*j;
 	}
-	printf("totalifactor=%d \n", i);
 	return i;
 }
 
-int expression(){
-	int i=0, j=0;
+int expression(){ //<expression>::= <term> | <expression> ’+’ <term> | <expression> ’-’ <term>
+	int i= 0, j= 0;
 	ispaces();
-	if ( !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='('){
+
+	if (!(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='('){
 		error1++;
 		ch=getchar();
 	}
 	i= term();
+
 	while(ch=='+' || ch=='-'){
-		char operation= ch;
+		int operation= ch;
 		ch=getchar();
 		ispaces();
 
@@ -105,19 +104,18 @@ int expression(){
 		j=term();
 		if(operation=='+') i= i+j;
 		else i= i-j;
-
 	}
 	return i;
 }
 
-int factor(){
-	int i=0;
+int factor(){ //factor::= <snumber> | ’(’ <expression> ’)’
+	int i= 0;
 
 	i= snumber();
 	if (ch=='('){
 		ch=getchar();
 		i=expression();
-		printf("iexpression= %d\n", i);
+
 		if (ch==')'){
 			ch=getchar();
 			ispaces();
@@ -127,8 +125,6 @@ int factor(){
 			error2++;
 		}
 	}
-	//else i= snumber();
-	printf("isnumber= %d\n", i);
 	return i;
 }
 
