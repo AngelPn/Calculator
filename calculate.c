@@ -15,8 +15,8 @@ int unumber(){ //<unumber>::= <digit> | <digit> <unumber>
 	int  i= 0;
 
 	while (ch>='0' && ch<='9'){
-    	i= (ch-'0')+i*10;
-      ch= getchar();
+    		i= (ch-'0')+i*10;
+      		ch= getchar();
 	}
 	ispaces(); //Ignore the spaces
 	while(ch!='+' && ch!='-' && ch!='*' && ch!='\n' && ch!=')'){ //If following character not expected
@@ -32,23 +32,19 @@ int snumber(){ //<snumber>::= <unumber> | ’+’ <unumber> | ’-’ <unumber>
 	if (ch=='+'){ //If the number is positive
 		ch= getchar();
 		//If following character not expected
-		if (ch=='\n' ){
+		if (ch=='\n' )
 			error3++;
-		}
-		else if (!(ch>='0' && ch<='9')){
+		else if (!(ch>='0' && ch<='9'))
 			error1++;
-		}
 		else i= unumber();
 	}
 	else if (ch=='-'){ //If the number is negative
 		ch=getchar();
 		//If following character not expected
-		if (ch=='\n'){//If following character not expected
+		if (ch=='\n')//If following character not expected
 			error3++;
-		}
-		else if (!(ch>='0' && ch<='9')){
+		else if (!(ch>='0' && ch<='9'))
 			error1++;
-		}
 		else i=(-1)*unumber();
 	}
 	else if (ch>='0' && ch<='9') //Not a signed number
