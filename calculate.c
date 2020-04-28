@@ -13,7 +13,6 @@ void ispaces(){ //Function that ignores the spaces and tabs at input
 
 int unumber(){ //<unumber>::= <digit> | <digit> <unumber>
 	int  i= 0;
-
 	while (ch>='0' && ch<='9'){
     		i= (ch-'0')+i*10;
       		ch= getchar();
@@ -28,7 +27,6 @@ int unumber(){ //<unumber>::= <digit> | <digit> <unumber>
 
 int snumber(){ //<snumber>::= <unumber> | ’+’ <unumber> | ’-’ <unumber>
 	int i= 0;
-
 	if (ch=='+'){ //If the number is positive
 		ch= getchar();
 		//If following character not expected
@@ -49,7 +47,6 @@ int snumber(){ //<snumber>::= <unumber> | ’+’ <unumber> | ’-’ <unumber>
 	}
 	else if (ch>='0' && ch<='9') //Not a signed number
 		i= unumber();
-
 	return i;
 }
 
@@ -57,7 +54,6 @@ int factor();
 
 int term(){ //<term>::= <factor> | <factor> ’*’ <term>
 	int i= 0, j= 0;
-
 	i= factor();
 
 	while (ch=='*'){
@@ -106,8 +102,8 @@ int expression(){ //<expression>::= <term> | <expression> ’+’ <term> | <expr
 
 int factor(){ //factor::= <snumber> | ’(’ <expression> ’)’
 	int i= 0;
-
 	i= snumber();
+	
 	if (ch=='('){
 		ch=getchar();
 		i=expression();
@@ -117,9 +113,8 @@ int factor(){ //factor::= <snumber> | ’(’ <expression> ’)’
 			ispaces();
 			return i;
 		}
-		else if (ch=='\n'){
+		else if (ch=='\n')
 			error2++;
-		}
 	}
 	return i;
 }
@@ -127,9 +122,8 @@ int factor(){ //factor::= <snumber> | ’(’ <expression> ’)’
 int main(void){
 	int  total=0, flag=0;
 	while ((ch=getchar())!= EOF){
-		while (ch!='\n'){
+		while (ch!='\n')
 			total= expression();
-		}
 		if (error1!=0){
 			flag++;
 			printf("Result %d: Unexpected character\n", flag);
@@ -146,7 +140,6 @@ int main(void){
 			flag++;
 			printf("Result %d: %d\n",flag,total);
 		}
-
 		error1=0;
 		error2=0;
 		error3=0;
