@@ -25,24 +25,18 @@ int unumber(){ //<unumber>::= <digit> | <digit> <unumber>
 	return i; //Return the unsigned number
 }
 
-int snumber(){ //<snumber>::= <unumber> | ’+’ <unumber> | ’-’ <unumber>
+int snumber(){ //<snumber>::= <unumber> | '+' <unumber> | '-' <unumber>
 	int i= 0;
-	if (ch=='+'){ //If the number is positive
-		ch= getchar();
-		//If following character not expected
-		if (ch=='\n' )
-			error3++;
-		else if (!(ch>='0' && ch<='9'))
-			error1++;
+	if (ch == '+'){ //If the number is positive
+		ch = getchar();
+		if (ch == '\n' ) error3++;
+		else if (!(ch>='0' && ch<='9')) error1++;
 		else i= unumber();
 	}
-	else if (ch=='-'){ //If the number is negative
-		ch=getchar();
-		//If following character not expected
-		if (ch=='\n')//If following character not expected
-			error3++;
-		else if (!(ch>='0' && ch<='9'))
-			error1++;
+	else if (ch == '-'){ //If the number is negative
+		ch =getchar();
+		if (ch =='\n') error3++;
+		else if (!(ch>='0' && ch<='9')) error1++;
 		else i=(-1)*unumber();
 	}
 	else if (ch>='0' && ch<='9') //Not a signed number
@@ -52,7 +46,7 @@ int snumber(){ //<snumber>::= <unumber> | ’+’ <unumber> | ’-’ <unumber>
 
 int factor();
 
-int term(){ //<term>::= <factor> | <factor> ’*’ <term>
+int term(){ //<term>::= <factor> | <factor> '*' <term>
 	int i= 0, j= 0;
 	i= factor();
 
@@ -60,8 +54,7 @@ int term(){ //<term>::= <factor> | <factor> ’*’ <term>
 		ch=getchar();
 		ispaces();
 
-		if (ch=='\n')
-			error3++;
+		if (ch=='\n') error3++;
 		else if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
 			error1++;
 			ch=getchar();
@@ -72,7 +65,7 @@ int term(){ //<term>::= <factor> | <factor> ’*’ <term>
 	return i;
 }
 
-int expression(){ //<expression>::= <term> | <expression> ’+’ <term> | <expression> ’-’ <term>
+int expression(){ //<expression>::= <term> | <expression> '+' <term> | <expression> '-' <term>
 	int i= 0, j= 0;
 	ispaces();
 
@@ -87,8 +80,7 @@ int expression(){ //<expression>::= <term> | <expression> ’+’ <term> | <expr
 		ch=getchar();
 		ispaces();
 
-		if (ch=='\n')
-			error3++;
+		if (ch=='\n') error3++;
 		if (ch!='(' && !(ch>='0' && ch<='9') && ch!='+' && ch!='-' && ch!='\n'){
 			error1++;
 			ch=getchar();
@@ -100,7 +92,7 @@ int expression(){ //<expression>::= <term> | <expression> ’+’ <term> | <expr
 	return i;
 }
 
-int factor(){ //factor::= <snumber> | ’(’ <expression> ’)’
+int factor(){ //factor::= <snumber> | '(' <expression> ')'
 	int i= 0;
 	i= snumber();
 	
@@ -113,8 +105,7 @@ int factor(){ //factor::= <snumber> | ’(’ <expression> ’)’
 			ispaces();
 			return i;
 		}
-		else if (ch=='\n')
-			error2++;
+		else if (ch=='\n') error2++;
 	}
 	return i;
 }
@@ -124,25 +115,13 @@ int main(void){
 	while ((ch=getchar())!= EOF){
 		while (ch!='\n')
 			total= expression();
-		if (error1!=0){
-			flag++;
-			printf("Result %d: Unexpected character\n", flag);
-		}
-		else if (error2!=0){
-			flag++;
-			printf("Result %d: Missing closing parenthesis\n", flag);
-		}
-		else if (error3!=0){
-			flag++;
-			printf("Result %d: Unexpected end of input\n", flag);
-		}
-		else if (error1==0 && error2==0 && error3==0){
-			flag++;
-			printf("Result %d: %d\n",flag,total);
-		}
-		error1=0;
-		error2=0;
-		error3=0;
+			
+		if (error1 != 0) printf("Result %d: Unexpected character\n", ++flag);
+		else if (error2 != 0) printf("Result %d: Missing closing parenthesis\n", ++flag);
+		else if (error3 != 0) printf("Result %d: Unexpected end of input\n", ++flag);
+		else printf("Result %d: %d\n", ++flag, total);
+			
+		error1 = 0; error2 = 0; error3 = 0;
 	}
 	return 0;
 }
